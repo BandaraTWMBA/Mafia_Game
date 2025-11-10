@@ -2,7 +2,9 @@ import { useState } from "react";
 import axios from "axios";
 
 export default function Register() {
-  const [form, setForm] = useState({ firstName: "", email: "", password: "" });
+  const [form, setForm] = useState({ firstname: "", email: "", password: "" });
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -10,11 +12,22 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setMessage("");
+    
     try {
-      const res = await axios.post("http://localhost:5000/auth/register", form);
-      alert("Registration successful! You can now login.");
+      const res = await axios.post("http://localhost:5000/register", {
+        firstname: form.firstname,
+        email: form.email,
+        password: form.password
+      });
+      
+      setMessage(res.data.message || "Registration successful!");
+      setForm({ firstname: "", email: "", password: "" }); // Clear form
     } catch (err) {
-      alert(err.response?.data?.message || "Registration failed");
+      setMessage(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -24,9 +37,9 @@ export default function Register() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          name="firstName"
+          name="firstname"
           placeholder="First Name"
-          value={form.firstName}
+          value={form.firstname}
           onChange={handleChange}
           required
         />
@@ -45,9 +58,18 @@ export default function Register() {
           value={form.password}
           onChange={handleChange}
           required
+          minLength="6"
         />
-        <button type="submit">Register</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Registering..." : "Register"}
+        </button>
       </form>
+      
+      {message && (
+        <div className={`message ${message.includes("successful") ? "success" : "error"}`}>
+          {message}
+        </div>
+      )}
     </div>
   );
 }

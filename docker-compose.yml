@@ -3,18 +3,20 @@ version: "3.8"
 services:
   backend:
     build:
-      context: ./mafia_backend
+      context: ./backend
       dockerfile: Dockerfile
-    container_name: nest-backend
+    container_name: node-backend
     ports:
       - "5000:5000"
     environment:
-      - MONGO_URI=mongodb://mongo:27017/mafia_db
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/auth_db  # Changed to match your code
     depends_on:
       - mongo
     volumes:
-      - ./mafia_backend:/app
+      - ./backend:/app
       - /app/node_modules
+    restart: unless-stopped
 
   frontend:
     build:
@@ -23,19 +25,25 @@ services:
     container_name: react-frontend
     ports:
       - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:5000
     depends_on:
       - backend
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    restart: unless-stopped
 
   mongo:
     image: mongo:6
     container_name: mongo-db
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=auth_db
     volumes:
       - mongo_data:/data/db
+    restart: unless-stopped
 
 volumes:
   mongo_data:
