@@ -192,7 +192,7 @@ app.get('/users', async (req, res) => {
 // Root endpoint
 app.get('/', (req, res) => {
     res.json({
-        message: 'Authentication API is running',
+        message: 'Authentication API is running in progress',
         endpoints: {
             register: 'POST /register',
             login: 'POST /login',
