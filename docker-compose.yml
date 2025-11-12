@@ -1,15 +1,15 @@
 services:
   backend:
-    image: mafia_backend          # <-- explicitly name the image
+    image: health_backend          # <-- explicitly name the image
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: mafia_backend
+    container_name: health_backend
     ports:
       - "5000:5000"
     environment:
       - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongo:27017/auth_db
+      - MONGODB_URI=mongodb://mongo:27017/devops_db
     depends_on:
       - mongo
     volumes:
@@ -18,11 +18,11 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: mafia_frontend         # <-- explicitly name the image
+    image: health_frontend         # <-- explicitly name the image
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: mafia_frontend
+    container_name: health_frontend
     ports:
       - "5173:5173"
     environment:
